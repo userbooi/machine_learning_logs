@@ -1,0 +1,30 @@
+import numpy as np
+
+'''
+'a' is the learning rate (the amount of the gradient that will be used to change the weight and bias)
+
+formula for linear regression: y_pred = w * x + b
+where w is the weight (slope)
+      b is the bias (intercept)
+      
+basic concept of linear regression:
+    - finds the line of best fit from scattered points
+    - updates the weight (w) and bias (b) until its the most accurate
+        - uses the MSE (Mean Square Error) loss function
+    - uses gradient descent to find the w and b that yields the minimum MSE
+
+'''
+
+
+class LinearRegression:
+
+    def __init__(self, a=0.001, epoch=1000):
+        self.a = a
+        self.epoch = epoch
+        self.w = 0
+        self.b = 0
+
+    # training function that updates the default parameters into the correct ones based on the
+    # features (X) and targets (y)
+    def fit(self, X, y):
+
