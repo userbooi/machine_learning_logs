@@ -23,53 +23,53 @@ size of the array along each dimension is called its SHAPE
 #
 # print(f"{arr1}\n{arr2}\n{arr3}")
 
-#========================create arrays using builtin methods================
-zeros_array = np.zeros((2, 3))
-print(zeros_array)
-
-#                        face row col
-zeros_array_3D = np.zeros((3, 4, 2))
-print(zeros_array_3D)
-
-ones_array = np.ones((3, 2))
-print(ones_array)
-
-# Generates an array with values in a specified range.
-#                     start end skip
-range_array1 = np.arange(0, 10, 2)
-print(range_array1)
-
-range_array2 = np.arange(0, 10, 3)
-print(range_array2)
-
-linear_array = np.linspace(0, 1, 5)
-print(linear_array)
-
-# generate an array starting at 0 to 10, excluding 10
-consecutive = np.arange(10)
-print(consecutive)
-
-# reshape an array to the specified shape
-# the new dimensions must match the total number of elements
-reshaped1 = np.reshape(np.arange(6), (2, 3))
-print(reshaped1)
-
-reshaped2 = np.reshape(np.array([[1, 3, 2], [3, 2, 3], [4, 3, 2], [10, 12, 11]], dtype=np.float64), (2, 6))
-print(reshaped2)
-
-# turns a multi-deminsional array into 1D
-flattened = reshaped1.flatten()
-print(flattened)
-
-# concatenate two arrays (rank must be the same and the shape along a dimension)
-a = np.array([[1, 2], [3, 4]])
-b = np.array([[5, 6], [7, 8]])
-c = np.array([[5, 6]])
-concatenated1 = np.concatenate((a, b))
-print(concatenated1)
-
-concatenated2 = np.concatenate((a, c))
-print(concatenated2)
+#========================create arrays using builtin methods========================
+# zeros_array = np.zeros((2, 3))
+# print(zeros_array)
+#
+# #                        face row col
+# zeros_array_3D = np.zeros((3, 4, 2))
+# print(zeros_array_3D)
+#
+# ones_array = np.ones((3, 2))
+# print(ones_array)
+#
+# # Generates an array with values in a specified range.
+# #                     start end skip
+# range_array1 = np.arange(0, 10, 2)
+# print(range_array1)
+#
+# range_array2 = np.arange(0, 10, 3)
+# print(range_array2)
+#
+# linear_array = np.linspace(0, 1, 5)
+# print(linear_array)
+#
+# # generate an array starting at 0 to 10, excluding 10
+# consecutive = np.arange(10)
+# print(consecutive)
+#
+# # reshape an array to the specified shape
+# # the new dimensions must match the total number of elements
+# reshaped1 = np.reshape(np.arange(6), (2, 3))
+# print(reshaped1)
+#
+# reshaped2 = np.reshape(np.array([[1, 3, 2], [3, 2, 3], [4, 3, 2], [10, 12, 11]], dtype=np.float64), (2, 6))
+# print(reshaped2)
+#
+# # turns a multi-deminsional array into 1D
+# flattened = reshaped1.flatten()
+# print(flattened)
+#
+# # concatenate two arrays (rank must be the same and the shape along a dimension)
+# a = np.array([[1, 2], [3, 4]])
+# b = np.array([[5, 6], [7, 8]])
+# c = np.array([[5, 6]])
+# concatenated1 = np.concatenate((a, b))
+# print(concatenated1)
+#
+# concatenated2 = np.concatenate((a, c))
+# print(concatenated2)
 
 # ============================accessing arrays==============================
 # arr = np.array([
@@ -122,13 +122,18 @@ print(concatenated2)
 # print(x.dtype)
 
 #==========================more operations==============================
-# arr1 = np.array([[4, 7], [2, 6]], dtype=np.float64)
-# arr2 = np.array([[3, 6], [2, 8]], dtype=np.float64)
-# arr3 = np.array([[4, 2, 3], [3, 2, 10]], dtype=np.float64)
-#
+arr1 = np.array([[4, 7], [2, 6]], dtype=np.float64)
+arr2 = np.array([[3, 6], [2, 8]], dtype=np.float64)
+arr3 = np.array([[4, 2, 3], [3, 2, 10]], dtype=np.float64)
+
 # print(np.add(arr1, arr2)) # cannot add with different shapes (size)
 # print(np.sum(arr1))
 # print(np.sqrt(arr1))
+# print(arr1.mean())
+# print(arr1 * arr2)
 # # transpose (swap the columns and rows)
 # print(arr1.T)
 # print(arr3.T)
+
+# dot products
+print(np.dot(arr1, arr2))

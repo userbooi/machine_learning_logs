@@ -18,13 +18,25 @@ basic concept of linear regression:
 
 class LinearRegression:
 
-    def __init__(self, a=0.001, epoch=1000):
+    def __init__(self, a=0.001, epochs=1000):
         self.a = a
-        self.epoch = epoch
+        self.epochs = epochs
         self.w = 0
         self.b = 0
 
     # training function that updates the default parameters into the correct ones based on the
     # features (X) and targets (y)
     def fit(self, X, y):
+
+        for _ in range(self.epochs):
+            preds = self.w * X.ravel() + self.b
+            dw = ((preds-y) * X.ravel()).mean()
+            db = (preds-y).mean()
+            self.w -= self.a * dw
+            self.b -= self.b * db
+
+    # predict values of the tests
+    def predict(self, X):
+        preds = self.w * X.ravel() + self.b
+        return preds
 
