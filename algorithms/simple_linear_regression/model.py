@@ -15,7 +15,6 @@ basic concept of linear regression:
 
 '''
 
-
 class LinearRegression:
 
     def __init__(self, a=0.001, epochs=1000):
@@ -23,6 +22,8 @@ class LinearRegression:
         self.epochs = epochs
         self.w = 0
         self.b = 0
+
+        self.output_default()
 
     # training function that updates the default parameters into the correct ones based on the
     # features (X) and targets (y)
@@ -39,4 +40,12 @@ class LinearRegression:
     def predict(self, X):
         preds = self.w * X.ravel() + self.b
         return preds
+
+    def output_default(self):
+        print((f"information regarding default model:\n"
+              f"\tmodel name\t\t: Linear Regression\n"
+              f"\tlearning rate (a)\t: {self.a}\n"
+              f"\tweight\t\t\t: {self.w}\n"
+              f"\tbias\t\t\t: {self.b}\n"
+              f"\tepochs\t\t\t: {self.epochs}").title())
 

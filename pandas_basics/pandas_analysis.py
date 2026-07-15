@@ -13,17 +13,20 @@ pandas works with two core structures:
 
 #=========================creating dataframes========================
 # can be created from lists, dictionaries, and others
-# two_dimensional_list = [[1, 2, 3], [3, 4, 5]]
-# label_table = {
-#     "Name": ["player1", "player2", "player3"],
-#     "strength": [10, 23, 15],
-# }
-#
-# dataframe_list = pd.DataFrame(two_dimensional_list)
-# dataframe_table = pd.DataFrame(label_table)
-#
-# print(dataframe_table)
-# print(dataframe_list)
+two_dimensional_list = [[1, 2, 3], [3, 4, 5]]
+label_table = {
+    "Name": ["player1", "player2", "player3"],
+    "strength": [10, 23, 15],
+    "Age": [21, 20, 23],
+}
+
+dataframe_list = pd.DataFrame(two_dimensional_list)
+dataframe_table = pd.DataFrame(label_table)
+dataframe_specific_col = pd.DataFrame(label_table, columns=["Name", "Age"])
+
+print(dataframe_table)
+print(dataframe_list)
+print(dataframe_specific_col)
 
 #=========================creating series============================
 # can be created from lists, dictionaries, numpy arrays, and others
@@ -55,41 +58,41 @@ pandas works with two core structures:
 #======================more on describe==========================
 # describe is different for strings (Object type in pandas) than for numerical values
 
-data = pd.read_csv("data/nba.csv") # reads it and turns it into a dataframe
-print(data)
-
-print("\nSummary using describe:")
-print(data.describe())
-
-# customize what to include in the description
-include = ["object", "float", "int"]
-
-print("\nSummary using customized describe:")
-print(data.describe(include=include))
-
-# describing a specific one
-specific_data = data["Name"]
-print("\nSummary using describe on a specific column:")
-print(specific_data.describe())
+# data = pd.read_csv("data/nba.csv") # reads it and turns it into a dataframe
+# print(data)
+#
+# print("\nSummary using describe:")
+# print(data.describe())
+#
+# # customize what to include in the description
+# include = ["object", "float", "int"]
+#
+# print("\nSummary using customized describe:")
+# print(data.describe(include=include))
+#
+# # describing a specific one
+# specific_data = data["Name"]
+# print("\nSummary using describe on a specific column:")
+# print(specific_data.describe())
 
 #=====================indexing with pandas==========================
-# column(s)
-print("\nthe following are specific columns printed:")
-print(data["Team"])
-print("\n")
-print(data[["Name", "Team"]])
-
-# filters
-print("\nthe following are the players that are older than 35 years old:")
-print(data[data["Age"]>35])
-
-# using loc
-print("\n")
-#               row
-print(data.loc[109])
-print("\n")
-#                   rows
-print(data.loc[[109, 101, 93]])
-print("\n")
-#                   row         column
-print(data.loc[[109, 101], ["Name", "Team", "Position"]])
+# # column(s)
+# print("\nthe following are specific columns printed:")
+# print(data["Team"])
+# print("\n")
+# print(data[["Name", "Team"]])
+#
+# # filters
+# print("\nthe following are the players that are older than 35 years old:")
+# print(data[data["Age"]>35])
+#
+# # using loc
+# print("\n")
+# #               row
+# print(data.loc[109])
+# print("\n")
+# #                   rows
+# print(data.loc[[109, 101, 93]])
+# print("\n")
+# #                   row         column
+# print(data.loc[[109, 101], ["Name", "Team", "Position"]])

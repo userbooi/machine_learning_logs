@@ -8,21 +8,23 @@ from model import LinearRegression
 def MSE(y, pred):
     return ((pred-y)**2).mean()
 
-X, y = datasets.make_regression(n_samples=100, n_features=1, noise=20, random_state=3)
+X, y = datasets.make_regression(n_samples=300, n_features=1, noise=15, random_state=42)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1)
 
 # # X is a 2D numpy array with shape (total_samples, 1)
 # print(X)
 # print(type(X))
+# print(X.shape)
 # # y is a 1d numpy array
 # print(y)
 # print(type(y))
 
-model = LinearRegression()
+model = LinearRegression(0.003)
 model.fit(X_train, y_train)
 pred = model.predict(X_test)
 
 print(MSE(y_test, pred))
+print(model.w, model.b)
 
 all_pred = model.predict(X)
 
