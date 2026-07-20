@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from math import e
+from sklearn.datasets import load_breast_cancer
 
 '''
 gradients are vector values made up of its partial derivatives.
@@ -39,14 +41,10 @@ where: w is weight
 
 '''
 
-#============================== Mean Square Error ===============================
 np.random.seed(42)
 n = 200
 
-X = np.linspace(-2, 3, n).reshape(-1, 1)
-# generates a target array of scattered points that should result in a line of best fit
-# of y = 3x - 1.25
-y = 3 * X.ravel() - 1.25 + 0.7 * np.random.randn(n)
+#============================== Mean Square Error ===============================
 
 def gradient_descent_MSE(X, y, loss, w=0.0, b=0.0, a=0.003, epoch=1000):
     '''
@@ -75,30 +73,101 @@ def gradient_descent_MSE(X, y, loss, w=0.0, b=0.0, a=0.003, epoch=1000):
 
     return w, b
 
+#=========================== Binary Cross Entropy =============================
+
+def sigmoid_function(X):
+    """
+    The sigmoid function is a function that returns any input into a range (0, 1)
+    it is useful for classification as the value represents probability of something
+
+    the function is:
+
+    sigmoid = 1/(1 + e^(-x))
+    """
+    return 1 / (1 + np.exp(-X))
+
+def accuracy(y_pred, y):
+    return np.sum(y_pred == y) / len(y)
+
+def gradient_descent_BCE(X, y, loss, a=0.003, epoch=1000):
+    """
+    the formula for BCE is:
+    L = -1/n * sigma(y*log(y_pred) + (1-y)*log(1-y_pred))
+
+    **IMPORTANT**
+    sigmoid's derivative is:
+
+    sigmoid' = e^(-x)/(1+e^(-x))^2 = (sigmoid)(1-sigmoid)
+    **IMPORTANT**
+
+    since there are multiple features, w will have subscripts
+    The calculation for these derivatives can be done with ease
+    grad_L_wi = 1/n * sigma((y_pred - y)(xi))
+
+    grad_L_b = 1/n * sigma(y_pred - y)
+
+    """
+
+    n_samples, n_features = X.shape
+    w = np.zeros(n_features)
+    b = 0
+
+    for _ in range(epoch):
+        y_lin = np.dot(X, w) + b
+        y_pred = sigmoid_function(y_lin)
+        errors = y_pred - y
+
+        # curr_loss = -np.mean(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
+        # loss.append(curr_loss)
+
+        dw = 1/n_samples * np.dot(errors, X)
+        db = errors.mean()
+
+        w -= a * dw
+        b -= a * db
+
+    return w, b
+
 #================================== testing ==================================
+
 loss = []
-w, b = gradient_descent_MSE(X, y, loss)
 
-for l in loss:
-    print(l)
+#================================== linear regression =========================================
+# X = np.linspace(-2, 3, n).reshape(-1, 1)
+# # generates a target array of scattered points that should result in a line of best fit
+# # of y = 3x - 1.25
+# y = 3 * X.ravel() - 1.25 + 0.7 * np.random.randn(n)
 
-print(w, b)
+# w, b = gradient_descent_MSE(X, y, loss)
+# print(w, b)
 
-#================================== plot =====================================
-plt.figure()
-plt.plot(loss, color="green")
-plt.title("Linear Regression — Loss (MSE)")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.grid(True)
-plt.show()
+#================================== logistic regression =======================================
+X, y = load_breast_cancer(return_X_y=True)
 
-plt.figure()
-plt.scatter(X, y, color="lightgreen")
-idx = np.argsort(X.ravel())
-plt.plot(X[idx], (w * X + b)[idx], color="green", linewidth=2)
-plt.title("Linear Regression — Fitted Line")
-plt.xlabel("x")
-plt.ylabel("y")
-plt.grid(True)
-plt.show()
+w, b = gradient_descent_BCE(X, y, loss, a=0.0001, epoch=1000)
+y_lin = np.dot(X, w) + b
+y_pred = sigmoid_function(y_lin)
+y_pred = np.array([1 if pred>0.5 else 0 for pred in y_pred])
+
+print(accuracy(y_pred, y))
+
+#================================== plot for linear regression =====================================
+# plt.figure()
+# plt.plot(loss, color="green")
+# plt.title("Linear Regression — Loss (MSE)")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.grid(True)
+# plt.show()
+
+# plt.figure()
+# plt.scatter(X, y, color="lightgreen")
+# idx = np.argsort(X.ravel())
+# plt.plot(X[idx], (w * X + b)[idx], color="green", linewidth=2)
+# plt.title("Linear Regression — Fitted Line")
+# plt.xlabel("x")
+# plt.ylabel("y")
+# plt.grid(True)
+# plt.show()
+
+
