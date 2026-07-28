@@ -1,5 +1,26 @@
 import numpy as np
 
+'''
+'lr' is the learning rate (the amount of the gradient that will be used to change the weight and bias)
+
+steps for logistic regression:
+    - pass the data through a linear function (often multivariable linear function)
+    - pass the result through sigmoid function to resolve the value between 0 and 1 (probabilities)
+    - when probability is < 0.5, then it becomes a 0
+    - when probability is >= 0.5, then it becomes a 1
+
+where w is the weight (slope)
+      b is the bias (intercept)
+
+basic concept of logistic regression:
+    - classifies the input
+        - the values represents a yes/no or is/is not
+    - updates the weight (w) and bias (b) until its the most accurate
+        - uses the BCE (Binary Cross Entropy) loss function
+    - uses gradient descent to find the w and b that yields the minimum BCE
+
+'''
+
 class LogisticRegression:
 
     def __init__(self, lr=0.001, epochs=1000):
