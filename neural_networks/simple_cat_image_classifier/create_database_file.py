@@ -9,7 +9,7 @@ pixel_dims = 128
 # create a path for the images to be looped through
 img_folder = Path("images")
 
-data, target = [], []
+data, target, list_class = [], [], []
 
 for img_path in img_folder.iterdir():
     # load image and convert to RGB
@@ -22,8 +22,10 @@ for img_path in img_folder.iterdir():
     # check if the image is a cat to add the target
     if "cat" in img_path.name:
         target.append(1)
+        list_class.append("cat")
     else:
         target.append(0)
+        list_class.append("not cat")
 
 # convert everything into numpy arrays
 data, target = np.array(data), np.array(target)
@@ -32,3 +34,4 @@ data, target = np.array(data), np.array(target)
 with h5py.File("data/database.h5", "w") as f:
     f.create_dataset("data", data=data, compression="gzip")
     f.create_dataset("target", data=target, compression="gzip")
+    f.create_dataset("list_class", data=list_class, compression="gzip")
