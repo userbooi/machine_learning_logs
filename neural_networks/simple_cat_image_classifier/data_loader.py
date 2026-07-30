@@ -9,4 +9,4 @@ def data_loader():
     dataset = h5py.File("data/database.h5", "r")
 
     # return the data in the database split
-    return dataset["data"][:], dataset["target"][:], dataset["list_class"][:]
+    return dataset["data"][:], dataset["target"][:].reshape(1, dataset["target"][:].shape[0]), dataset["list_class"][:]
