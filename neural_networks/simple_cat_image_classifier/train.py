@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from model import LogisticRegression
 from sklearn.metrics import accuracy_score
+from PIL import Image
 
 # set the dimensions of the pixel
 pixel_dims = 128
@@ -13,7 +14,7 @@ pixel_dims = 128
 X_raw, y, list_class = data_loader()
 
 # check some images
-# plt.imshow(X_raw[9])
+# plt.imshow(X_raw[52])
 # plt.show()
 
 # view the data
@@ -21,7 +22,6 @@ X_raw, y, list_class = data_loader()
 # print(type(y), y.shape)
 
 # flatten and normalize the colors - each column will be a single sample, and the rows will be the colors
-# X_channels = X_raw.transpose(0, 3, 1, 2)
 X_flat = X_raw.reshape(X_raw.shape[0], -1)
 X = X_flat / 255
 
@@ -32,12 +32,21 @@ X_train, X_test, y_train, y_test = X_train.T, X_test.T, y_train.reshape(1, y_tra
 
 model = LogisticRegression()
 model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-y_pred_train = model.predict(X_train)
-print(accuracy_score(y_pred.ravel(), y_test.ravel())) # 48%
-print(accuracy_score(y_pred_train.ravel(), y_train.ravel())) # 100%
+# y_pred = model.predict(X_test)
+# y_pred_train = model.predict(X_train)
+# print(accuracy_score(y_pred.ravel(), y_test.ravel())) # 48%
+# print(accuracy_score(y_pred_train.ravel(), y_train.ravel())) # 100%
 
-# test
+# ================== test with separate images =======================
+img1 = np.array(Image.open("separate_images/kawhi_leonard.jpeg").resize((pixel_dims, pixel_dims)).convert("RGB"))
+img1_usable = img1.reshape(-1, 1) / 255
+# print(img1_usable.shape)
+print(model.predict(img1_usable)) # correct
+
+img2 = np.array(Image.open("separate_images/final_cat.jpg").resize((pixel_dims, pixel_dims)).convert("RGB"))
+img2_usable = img2.reshape(-1, 1) / 255
+print(model.predict(img2_usable)) # correct
+
 # from sklearn.datasets import load_breast_cancer
 #
 # X, y = load_breast_cancer(return_X_y=True)
