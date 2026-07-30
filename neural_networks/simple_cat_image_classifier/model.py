@@ -36,6 +36,9 @@ class LogisticRegression:
         n_features, n_samples = X.shape
         # call the initialize function
         self.initialize_parameters(n_features)
+        # check if y is rank 0
+        if y.ndim == 1:
+            y = y.reshape((1, y.shape[0]))
 
         # iterate through the epochs to correct parameters
         for _ in range(self.epochs):
@@ -44,6 +47,7 @@ class LogisticRegression:
             z = np.dot(self.w.T, X) + self.b
             # sigmoid
             y_pred = self.sigmoid(z)
+            print(y_pred)
 
             # calculate the cost using BCE
             cost = -np.mean(y * np.log(y_pred) + (1-y) * np.log(y_pred))
@@ -65,7 +69,9 @@ class LogisticRegression:
         # ========= only forward pass =========
         z = np.dot(self.w.T, X) + self.b
         y_pred = self.sigmoid(z)
-        y_pred.reshape(1, y_pred.shape[0])
+        # check if y_pred is rank 0
+        if y_pred.ndim == 1:
+            y_pred = y_pred.reshape((1, y_pred.shape[0]))
 
         # interpret the values
         for i in range(y_pred.shape[1]):

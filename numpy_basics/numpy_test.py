@@ -54,3 +54,9 @@ sum_keepdims = (norm_arr5**2).sum(axis=1, keepdims=True)
 print(sum_no_keepdims)
 print(sum_keepdims)
 
+# check the dimensions of rank 0 arrays vs 1 row rank 1 arrays
+arr8 = np.array([1, 2, 3, 4, 5, 6])
+arr9 = np.array([[1, 2, 3,4 ,5 ,6]])
+print(arr8.shape)
+print(arr9.shape)
+
