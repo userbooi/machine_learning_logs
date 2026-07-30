@@ -18,7 +18,7 @@ class LogisticRegression:
         self.epochs = epochs
         self.w = None
         self.b = None
-        self.costs = []
+        self.costs = None
 
     # helper function to set w and b to default values
     def initialize_parameters(self, n_features):
@@ -33,6 +33,7 @@ class LogisticRegression:
     def fit(self, X, y):
 
         # set basic information
+        self.costs = []
         n_features, n_samples = X.shape
         # call the initialize function
         self.initialize_parameters(n_features)
@@ -47,9 +48,12 @@ class LogisticRegression:
             z = np.dot(self.w.T, X) + self.b
             # sigmoid
             y_pred = self.sigmoid(z)
+            # clamp it by a little to avoid errors in cost calculations
+            epsilon = 1e-15
+            y_pred_clipped = np.clip(y_pred, epsilon, 1 - epsilon)
 
             # calculate the cost using BCE
-            cost = -np.mean(y * np.log(y_pred) + (1-y) * np.log(y_pred))
+            cost = -np.mean(y * np.log(y_pred_clipped) + (1-y) * np.log(1-y_pred_clipped))
             # check to see if it will be added to the costs attribute
             if _ % 100 == 0:
                 self.costs.append(cost)
@@ -73,11 +77,7 @@ class LogisticRegression:
             y_pred = y_pred.reshape((1, y_pred.shape[0]))
 
         # interpret the values
-        for i in range(y_pred.shape[1]):
-            if y_pred[0, i] > 0.5:
-                y_pred[0, i] = 1
-            else:
-                y_pred[0, i] = 0
+        y_pred = np.array([1 if pred > 0.5 else 0 for pred in y_pred[0]]).reshape(1, y_pred.shape[1])
 
         # return the value
         return y_pred
@@ -85,3 +85,8 @@ class LogisticRegression:
     # the get parameters function returns the w and b
     def get_parameters(self):
         return self.w, self.b
+
+    # helper function to print out all the cost values
+    def show_costs(self):
+        for i in range(len(self.costs)):
+            print(f"cost at epoch {i * 100}: {self.costs[i]}")
