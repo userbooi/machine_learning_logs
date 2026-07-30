@@ -47,7 +47,6 @@ class LogisticRegression:
             z = np.dot(self.w.T, X) + self.b
             # sigmoid
             y_pred = self.sigmoid(z)
-            print(y_pred)
 
             # calculate the cost using BCE
             cost = -np.mean(y * np.log(y_pred) + (1-y) * np.log(y_pred))

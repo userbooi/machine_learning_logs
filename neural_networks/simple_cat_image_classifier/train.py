@@ -36,5 +36,4 @@ X_train, X_test, y_train, y_test = X_train.T, X_test.T, y_train.reshape(1, y_tra
 model = LogisticRegression()
 model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
-
-print(accuracy_score(y_pred, y_test))
+print(accuracy_score(y_pred.ravel(), y_test.ravel()))
