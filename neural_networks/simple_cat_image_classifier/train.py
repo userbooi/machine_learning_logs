@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from PIL import Image
+from joblib import dump
 
 # set the dimensions of the pixel
 pixel_dims = 128
@@ -37,16 +38,11 @@ model.fit(X_train, y_train)
 # print(accuracy_score(y_pred.ravel(), y_test.ravel())) # 48%
 # print(accuracy_score(y_pred_train.ravel(), y_train.ravel())) # 100%
 
-# ================== test with separate images =======================
-img1 = np.array(Image.open("separate_images/kawhi_leonard.jpeg").resize((pixel_dims, pixel_dims)).convert("RGB"))
-img1_usable = img1.reshape(-1, 1) / 255
-# print(img1_usable.shape)
-print(model.predict(img1_usable)) # correct
+# save the model
+dump(model, "models/cat_model.joblib")
+print("model successfully saved to 'cat_model.joblib'")
 
-img2 = np.array(Image.open("separate_images/final_cat.jpg").resize((pixel_dims, pixel_dims)).convert("RGB"))
-img2_usable = img2.reshape(-1, 1) / 255
-print(model.predict(img2_usable)) # correct
-
+# ================================ test training =========================================
 # from sklearn.datasets import load_breast_cancer
 #
 # X, y = load_breast_cancer(return_X_y=True)
