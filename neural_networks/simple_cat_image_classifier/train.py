@@ -21,8 +21,8 @@ X_raw, y, list_class = data_loader()
 # print(type(y), y.shape)
 
 # flatten and normalize the colors - each column will be a single sample, and the rows will be the colors
-X_channels = X_raw.transpose(0, 3, 1, 2)
-X_flat = X_channels.reshape(X_raw.shape[0], -1)
+# X_channels = X_raw.transpose(0, 3, 1, 2)
+X_flat = X_raw.reshape(X_raw.shape[0], -1)
 X = X_flat / 255
 
 # split the data
@@ -34,7 +34,7 @@ model = LogisticRegression()
 model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 y_pred_train = model.predict(X_train)
-print(accuracy_score(y_pred.ravel(), y_test.ravel())) # 33%
+print(accuracy_score(y_pred.ravel(), y_test.ravel())) # 48%
 print(accuracy_score(y_pred_train.ravel(), y_train.ravel())) # 100%
 
 # test
