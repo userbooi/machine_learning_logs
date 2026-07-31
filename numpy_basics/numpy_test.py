@@ -60,3 +60,15 @@ arr9 = np.array([[1, 2, 3,4 ,5 ,6]])
 print(arr8.shape)
 print(arr9.shape)
 
+# testing the keepdims parameter
+arr10 = np.array([[1, 2, 3, 4],
+                  [3, 2, 10, 3],
+                  [11, 23, 7, 6],
+                  [5, 4, 9, 8]])
+print(np.sum(arr10, axis=1, keepdims=True))
+print(np.sum(arr10, axis=1))
+
+# create a list where it is only 0/1
+# 0 for when the value falls below threshold, and 1 when it is above
+arr11 = np.array(arr10 > 7, dtype=np.int64)
+print(arr11)
