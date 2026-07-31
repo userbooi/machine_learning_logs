@@ -31,7 +31,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 # transform the data into the ones that will work with the model
 X_train, X_test, y_train, y_test = X_train.T, X_test.T, y_train.reshape(1, y_train.shape[0]), y_test.reshape(1, y_test.shape[0])
 
-model = LogisticRegression()
+model = NN()
 model.fit(X_train, y_train)
 # y_pred = model.predict(X_test)
 # y_pred_train = model.predict(X_train)
