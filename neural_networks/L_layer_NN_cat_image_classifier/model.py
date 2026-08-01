@@ -1,5 +1,6 @@
 import numpy as np
 from activation_functions import *
+from coursera.neural_network_and_deep_learning.course1.W4A2.main import costs
 
 """
 
@@ -99,11 +100,10 @@ class NN:
         return dA_prev, dw, db
 
     # helper function to calculate the entire backward propagation
-    def backward(self, AL, caches, y):
+    def backward(self, AL, caches, y, m):
 
         # initialize the gradient cache
         grads = {}
-        m = y.shape[1]
 
         # calculate the gradient from the BCE Loss
         dAL = -(np.divide(y, AL) + np.divide(1-y, 1-AL))
@@ -129,3 +129,44 @@ class NN:
         for l in range(self.layers):
             self.W[f"W{l}"] -= self.lr * grads[f"dW{l}"]
             self.b[f"b{l}"] -= self.lr * grads[f"db{l}"]
+
+    # the fit function that trains the model
+    def fit(self, X, y, print_cost=False):
+
+        costs = []
+        m = y.shape[1]
+
+        # loop through all the iterations
+        for _ in range(self.epochs):
+
+            # calculate the forward pass
+            AL, caches = self.forward(X)
+
+            # calculate the cost
+            cost = self.calc_cost(AL, y, m)
+            if _ % 100 == 0:
+                costs.append(cost)
+                if print_cost:
+                    print(cost)
+
+            # calculate the backward pass
+            grads = self.backward(AL, caches, y, m)
+
+            # update the parameters
+            self.update_parameters(grads)
+
+        return costs
+
+    # the function to predict the test data
+    def predict(self, X):
+        # forward pass
+        AL, caches = self.forward(X)
+
+        # convert the answer to 0/1
+        for i in range(AL.shape[1]):
+            if AL[0, i] > 0.5:
+                AL[0, i] = 1
+            else:
+                AL[0, i] = 0
+
+        return AL
