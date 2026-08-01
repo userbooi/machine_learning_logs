@@ -71,4 +71,12 @@ print(np.sum(arr10, axis=1))
 # create a list where it is only 0/1
 # 0 for when the value falls below threshold, and 1 when it is above
 arr11 = np.array(arr10 > 7, dtype=np.int64)
+arr12 = np.array(arr10, copy=True)
+arr12[arr10 <= 7] = 0
+print()
 print(arr11)
+print(arr12)
+
+for i in range(5, 0, -1):
+    print(i)
+
