@@ -31,26 +31,15 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 # transform the data into the ones that will work with the model
 X_train, X_test, y_train, y_test = X_train.T, X_test.T, y_train.reshape(1, y_train.shape[0]), y_test.reshape(1, y_test.shape[0])
 
-model = NN()
-model.fit(X_train, y_train)
-# y_pred = model.predict(X_test)
-# y_pred_train = model.predict(X_train)
-# print(accuracy_score(y_pred.ravel(), y_test.ravel())) # 48%
-# print(accuracy_score(y_pred_train.ravel(), y_train.ravel())) # 100%
+layers_dims = [X_train.shape[0], 20, 7, 5, 1]
+model = NN(layers_dims, lr=0.0075)
+model.fit(X_train, y_train, print_cost=True)
+y_pred = model.predict(X_test)
+y_pred_train = model.predict(X_train)
+print(accuracy_score(y_pred.ravel(), y_test.ravel())) # 48%
+print(accuracy_score(y_pred_train.ravel(), y_train.ravel())) # 100%
 
 # save the model
-dump(model, "models/cat_model.joblib")
-print("model successfully saved to 'cat_model.joblib'")
+# dump(model, "models/cat_model.joblib")
+# print("model successfully saved to 'cat_model.joblib'")
 
-# ================================ test training =========================================
-# from sklearn.datasets import load_breast_cancer
-#
-# X, y = load_breast_cancer(return_X_y=True)
-# X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.3, random_state=42)
-# X_train, X_test, y_train, y_test = X_train.T, X_test.T, y_train.reshape(1, y_train.shape[0]), y_test.reshape(1, y_test.shape[0])
-#
-# model = LogisticRegression()
-# model.fit(X_train, y_train)
-# y_pred = model.predict(X_test)
-# print(accuracy_score(y_pred.ravel(), y_test.ravel()))
-# model.show_costs()

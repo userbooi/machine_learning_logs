@@ -1,6 +1,5 @@
 import numpy as np
 from activation_functions import *
-from coursera.neural_network_and_deep_learning.course1.W4A2.main import costs
 
 """
 
@@ -23,12 +22,16 @@ class NN:
         self.W = {}
         self.b = {}
 
+        self.init_params(layer_dim)
+
+        self.epsilon = 1e-15
+
     # initialize the parameters for each layer
     def init_params(self, layer_dim):
 
         for i in range(self.layers):
-            self.W[f"W{i+1}"] = np.random.randn(layer_dim[i], layer_dim[i-1]) * 0.01
-            self.b[f"b{i+1}"] = np.zeros((layer_dim[i], 1))
+            self.W[f"W{i+1}"] = np.random.randn(layer_dim[i+1], layer_dim[i]) / np.sqrt(layer_dim[i])
+            self.b[f"b{i+1}"] = np.zeros((layer_dim[i+1], 1))
 
     # helper function to only compute the weighted sums
     def weighted_sum(self, A_prev, curr_w, curr_b):
@@ -69,19 +72,25 @@ class NN:
         Z = self.weighted_sum(A_prev, self.W[f"W{self.layers}"], self.b[f"b{self.layers}"])
         AL = self.activation(Z, "sigmoid")
 
+        # add the final cache
+        caches.append((Z, A_prev))
+
         return AL, caches
 
     # calculate the cost function - using BCE Cost function
     def calc_cost(self, AL, y, m):
-        cost = -1/m * (np.dot(y, np.log(AL).T) + np.dot(1-y, np.log(1-AL).T))
+
+        AL = np.clip(AL, self.epsilon, 1-self.epsilon)
+
+        cost = (1. / m) * (-np.dot(y, np.log(AL).T) - np.dot(1 - y, np.log(1 - AL).T))
 
         return np.squeeze(cost)
 
     # helper function to calculate the gradients for the parameters
     def gradient_parameters(self, A_prev, dZ, curr_w, m):
-        dw = 1/m * np.dot(dZ, A_prev.T)
-        db = 1/m * np.sum(dZ, axis=1, keepdims=True)
-        dA_prev = np.dot(curr_w, dZ)
+        dw = 1./m * np.dot(dZ, A_prev.T)
+        db = 1./m * np.sum(dZ, axis=1, keepdims=True)
+        dA_prev = np.dot(curr_w.T, dZ)
 
         return dA_prev, dw, db
 
@@ -93,7 +102,7 @@ class NN:
         if function == "relu":
             dZ = relu_gradients(dA, Z)
         elif function == "sigmoid":
-            dZ = relu_gradients(dA, Z)
+            dZ = sigmoid_gradients(dA, Z)
 
         dA_prev, dw, db = self.gradient_parameters(A_prev, dZ, curr_w, m)
 
@@ -104,11 +113,14 @@ class NN:
 
         # initialize the gradient cache
         grads = {}
+        y = y.reshape(AL.shape)
+        # clip the AL
+        AL = np.clip(AL, self.epsilon, 1-self.epsilon)
 
         # calculate the gradient from the BCE Loss
-        dAL = -(np.divide(y, AL) + np.divide(1-y, 1-AL))
+        dAL = -(np.divide(y, AL) - np.divide(1.-y, 1.-AL))
         # put it into the sigmoid output layer gradient calculation
-        dA_prev, grads[f"dW{self.layers}"], grads[f"db{self.layers}"] = self.gradient_activation(
+        grads[f"dA{self.layers-1}"], grads[f"dW{self.layers}"], grads[f"db{self.layers}"] = self.gradient_activation(
             dAL, self.W[f"W{self.layers}"], m, caches[self.layers-1], "sigmoid"
         )
 
@@ -116,8 +128,8 @@ class NN:
         for l in range(self.layers-1, 0, -1):
 
             # calculate the gradients from the activation
-            dA_prev, grads[f"dW{l}"], grads[f"db{l}"] = self.gradient_activation(
-                dA_prev, self.W[f"W{l}"], m, caches[l-1], "relu"
+            grads[f"dA{l-1}"], grads[f"dW{l}"], grads[f"db{l}"] = self.gradient_activation(
+                grads[f"dA{l}"], self.W[f"W{l}"], m, caches[l-1], "relu"
             )
 
         return grads
@@ -127,8 +139,8 @@ class NN:
 
         # loop through all the gradients and update
         for l in range(self.layers):
-            self.W[f"W{l}"] -= self.lr * grads[f"dW{l}"]
-            self.b[f"b{l}"] -= self.lr * grads[f"db{l}"]
+            self.W[f"W{l+1}"] -= self.lr * grads[f"dW{l+1}"]
+            self.b[f"b{l+1}"] -= self.lr * grads[f"db{l+1}"]
 
     # the fit function that trains the model
     def fit(self, X, y, print_cost=False):
