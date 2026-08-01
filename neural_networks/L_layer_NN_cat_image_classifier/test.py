@@ -4,7 +4,7 @@ from joblib import load
 import matplotlib.pyplot as plt
 
 pixel_dims = 128
-model = load("models/cat_model.joblib")
+model = load("model/cat_model.joblib")
 
 # check some images
 # plt.imshow(X_raw[52])
