@@ -14,7 +14,7 @@ the output layer
 class NN:
 
     # initial function called upon instance creation
-    def __init__(self, layer_dim, lr=0.001, epochs=2500, lambd=None, keep_prob=None):
+    def __init__(self, layer_dim, lr=0.001, epochs=2500, lambd=0, keep_prob=1):
         self.lr = lr
         self.epochs = epochs
         self.layers = len(layer_dim) - 1

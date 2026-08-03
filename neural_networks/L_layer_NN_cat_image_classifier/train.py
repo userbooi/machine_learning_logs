@@ -32,8 +32,12 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 X_train, X_test, y_train, y_test = X_train.T, X_test.T, y_train.reshape(1, y_train.shape[0]), y_test.reshape(1, y_test.shape[0])
 
 layers_dims = [X_train.shape[0], 20, 7, 5, 1]
+
+#
 model = NN(layers_dims, lr=0.0075)
 model.fit(X_train, y_train, print_cost=True)
+
+
 y_pred = model.predict(X_test)
 y_pred_train = model.predict(X_train)
 print(accuracy_score(y_pred.ravel(), y_test.ravel())) # 60%
