@@ -3,36 +3,38 @@ from PIL import Image
 from joblib import load
 import matplotlib.pyplot as plt
 
-pixel_dims = 128
-model = load("models/cat_model_L2_regularized.joblib")
+pixel_dims = 64
+# model = load("models/cat_model.joblib")
+# model = load("models/cat_model_L2_regularized.joblib")
+model = load("models/cat_model_dropout_regularized.joblib")
 
 # ================== test with separate images =======================
 img1 = np.array(Image.open("separate_images/kawhi_leonard.jpeg").resize((pixel_dims, pixel_dims)).convert("RGB"))
-img1_usable = img1.reshape(-1, 1) / 255
+img1_usable = (img1.reshape(-1, 1) - model.mew) / model.sigma
 plt.imshow(img1)
 plt.show()
 print(model.predict(img1_usable)) # 0 - correct
 
 img2 = np.array(Image.open("separate_images/one_more_cat.jpg").resize((pixel_dims, pixel_dims)).convert("RGB"))
-img2_usable = img2.reshape(-1, 1) / 255
+img2_usable = (img2.reshape(-1, 1) - model.mew) / model.sigma
 plt.imshow(img2)
 plt.show()
 print(model.predict(img2_usable)) # 1 - correct
 
 img3 = np.array(Image.open("separate_images/final_cat.jpg").resize((pixel_dims, pixel_dims)).convert("RGB"))
-img3_usable = img3.reshape(-1, 1) / 255
+img3_usable = (img3.reshape(-1, 1) - model.mew) / model.sigma
 plt.imshow(img3)
 plt.show()
 print(model.predict(img3_usable)) # 1 - correct
 
 img4 = np.array(Image.open("separate_images/fried_chicken.jpeg").resize((pixel_dims, pixel_dims)).convert("RGB"))
-img4_usable = img4.reshape(-1, 1) / 255
+img4_usable = (img4.reshape(-1, 1) - model.mew) / model.sigma
 plt.imshow(img4)
 plt.show()
 print(model.predict(img4_usable)) # 0 - correct
 
 img5 = np.array(Image.open("separate_images/sideways_cat.jpg").resize((pixel_dims, pixel_dims)).convert("RGB"))
-img5_usable = img5.reshape(-1, 1) / 255
+img5_usable = (img5.reshape(-1, 1) - model.mew) / model.sigma
 plt.imshow(img5)
 plt.show()
 print(model.predict(img5_usable)) # 1 - correct

@@ -14,13 +14,15 @@ the output layer
 class NN:
 
     # initial function called upon instance creation
-    def __init__(self, layer_dim, lr=0.001, epochs=2500, lambd=0, keep_prob=1):
+    def __init__(self, layer_dim, mew, sigma, lr=0.001, epochs=2500, lambd=0, keep_prob=1):
         self.lr = lr
         self.epochs = epochs
         self.layers = len(layer_dim) - 1
         self.layer_dim = layer_dim
         self.lambd=lambd
         self.keep_prob = keep_prob
+        self.mew = mew
+        self.sigma = sigma
 
         self.W = {}
         self.b = {}
