@@ -96,10 +96,17 @@ class NN:
 
     def calc_cost_L2_regularized(self, AL, y, m):
 
+        # calculate the regular cost
         log_part = np.multiply(y, np.log(AL)) + np.multiply(1 - y, np.log(1 - AL))
         cost = -1. / m * np.nansum(log_part)
 
-        return np.squeeze(cost)
+        # calculate the regularized cost term
+        l2_regularized_cost = 0
+        for curr_w in self.W.values():
+            l2_regularized_cost += np.sum(np.square(curr_w))
+        l2_regularized_cost *= self.lambd / 2 / m
+
+        return np.squeeze(cost + l2_regularized_cost)
 
     # helper function to calculate the gradients for the parameters
     def gradient_parameters(self, A_prev, dZ, curr_w, m):
@@ -109,9 +116,17 @@ class NN:
 
         return dA_prev, dw, db
 
+    # the gradient calculation for the parameters with L2 regularization
+    def gradient_parameters_L2_regularized(self, A_prev, dZ, curr_w, m):
+        dw = 1./m * np.dot(dZ, A_prev.T) + self.lambd/m * curr_w
+        db = 1./m * np.sum(dZ, axis=1, keepdims=True)
+        dA_prev = np.dot(curr_w.T, dZ)
+
+        return dA_prev, dw, db
+
     # helper function to calculate the gradient for the activation function
-    def gradient_activation(self, dA, curr_w, m, cache, function):
-        dZ = None
+    def gradient_activation(self, dA, curr_w, m, cache, function, regularization):
+        dZ, dA_prev, dw, db = None, None, None, None
         Z, A_prev = cache
 
         if function == "relu":
@@ -119,12 +134,15 @@ class NN:
         elif function == "sigmoid":
             dZ = sigmoid_gradients(dA, Z)
 
-        dA_prev, dw, db = self.gradient_parameters(A_prev, dZ, curr_w, m)
+        if regularization == "none":
+            dA_prev, dw, db = self.gradient_parameters(A_prev, dZ, curr_w, m)
+        elif regularization == "L2":
+            dA_prev, dw, db = self.gradient_parameters_L2_regularized(A_prev, dZ, curr_w, m)
 
         return dA_prev, dw, db
 
     # helper function to calculate the entire backward propagation
-    def backward(self, AL, caches, y, m):
+    def backward(self, AL, caches, y, m, regularization):
 
         # initialize the gradient cache
         grads = {}
@@ -136,7 +154,7 @@ class NN:
         dAL = -(np.divide(y, AL) - np.divide(1.-y, 1.-AL))
         # put it into the sigmoid output layer gradient calculation
         grads[f"dA{self.layers-1}"], grads[f"dW{self.layers}"], grads[f"db{self.layers}"] = self.gradient_activation(
-            dAL, self.W[f"W{self.layers}"], m, caches[self.layers-1], "sigmoid"
+            dAL, self.W[f"W{self.layers}"], m, caches[self.layers-1], "sigmoid", regularization
         )
 
         # loop through all the hidden RELU layers backwards
@@ -144,7 +162,7 @@ class NN:
 
             # calculate the gradients from the activation
             grads[f"dA{l-1}"], grads[f"dW{l}"], grads[f"db{l}"] = self.gradient_activation(
-                grads[f"dA{l}"], self.W[f"W{l}"], m, caches[l-1], "relu"
+                grads[f"dA{l}"], self.W[f"W{l}"], m, caches[l-1], "relu", regularization
             )
 
         return grads
@@ -158,7 +176,7 @@ class NN:
             self.b[f"b{l+1}"] -= self.lr * grads[f"db{l+1}"]
 
     # the fit function that trains the model
-    def fit(self, X, y, print_cost=False):
+    def fit(self, X, y, print_cost=False, regularization="none"):
 
         costs = []
         m = y.shape[1]
@@ -177,7 +195,7 @@ class NN:
                     print(cost)
 
             # calculate the backward pass
-            grads = self.backward(AL, caches, y, m)
+            grads = self.backward(AL, caches, y, m, regularization)
 
             # update the parameters
             self.update_parameters(grads)
