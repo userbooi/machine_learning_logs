@@ -40,6 +40,6 @@ print(accuracy_score(y_pred.ravel(), y_test.ravel())) # 60%
 print(accuracy_score(y_pred_train.ravel(), y_train.ravel())) # 100%
 
 # save the model
-dump(model, "model/cat_model.joblib")
-print("model successfully saved to 'cat_model.joblib'")
+# dump(model, "model/cat_model.joblib")
+# print("model successfully saved to 'cat_model.joblib'")
 

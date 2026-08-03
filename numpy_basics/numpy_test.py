@@ -1,5 +1,6 @@
 import numpy as np
 
+np.random.seed(0)
 arr1 = np.array([1, 2, 3])
 arr2 = np.array([
     [3, 4, 5],
@@ -77,6 +78,7 @@ print()
 print(arr11)
 print(arr12)
 
-for i in range(5, 0, -1):
-    print(i)
+# testing conditions without new explicit np.array
+arr13 = np.random.rand(3, 4) < 0.5
+print(arr13)
 

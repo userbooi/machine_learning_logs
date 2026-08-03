@@ -14,10 +14,13 @@ the output layer
 class NN:
 
     # initial function called upon instance creation
-    def __init__(self, layer_dim, lr=0.001, epochs=2500):
+    def __init__(self, layer_dim, lr=0.001, epochs=2500, lambd=None, keep_prob=None):
         self.lr = lr
         self.epochs = epochs
         self.layers = len(layer_dim) - 1
+        self.layer_dim = layer_dim
+        self.lambd=lambd
+        self.keep_prob = keep_prob
 
         self.W = {}
         self.b = {}
@@ -27,11 +30,17 @@ class NN:
         self.epsilon = 1e-15
 
     # initialize the parameters for each layer
-    def init_params(self, layer_dim):
+    def init_params(self):
 
-        for i in range(self.layers):
-            self.W[f"W{i+1}"] = np.random.randn(layer_dim[i+1], layer_dim[i]) / np.sqrt(layer_dim[i])
-            self.b[f"b{i+1}"] = np.zeros((layer_dim[i+1], 1))
+        # use He initialization for the ReLU activation layers
+        for i in range(self.layers-1):
+            self.W[f"W{i+1}"] = np.random.randn(self.layer_dim[i + 1], self.layer_dim[i]) / np.sqrt(2 / self.layer_dim[i])
+            self.b[f"b{i+1}"] = np.zeros((self.layer_dim[i+1], 1))
+
+        # use Xavier initialization for the sigmoid output layer
+        self.W[f"W{self.layers}"] = np.random.randn(self.layer_dim[self.layers], self.layer_dim[self.layers-1]) / np.sqrt(1 / self.layer_dim[self.layer_dim-1])
+        self.b[f"b{self.layers}"] = np.zeros((self.layer_dim[self.layer_dim], 1))
+
 
     # helper function to only compute the weighted sums
     def weighted_sum(self, A_prev, curr_w, curr_b):
@@ -80,9 +89,15 @@ class NN:
     # calculate the cost function - using BCE Cost function
     def calc_cost(self, AL, y, m):
 
-        AL = np.clip(AL, self.epsilon, 1-self.epsilon)
+        log_part = np.multiply(y, np.log(AL)) + np.multiply(1 - y, np.log(1 - AL))
+        cost = -1. / m * np.nansum(log_part)
 
-        cost = (1. / m) * (-np.dot(y, np.log(AL).T) - np.dot(1 - y, np.log(1 - AL).T))
+        return np.squeeze(cost)
+
+    def calc_cost_L2_regularized(self, AL, y, m):
+
+        log_part = np.multiply(y, np.log(AL)) + np.multiply(1 - y, np.log(1 - AL))
+        cost = -1. / m * np.nansum(log_part)
 
         return np.squeeze(cost)
 
