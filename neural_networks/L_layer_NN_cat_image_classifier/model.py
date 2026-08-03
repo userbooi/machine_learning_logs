@@ -86,6 +86,40 @@ class NN:
 
         return AL, caches
 
+    # forward pass with dropout regularization
+    def forward_dropout(self, X):
+
+        A_prev = X
+        caches = []
+
+        # loop through each layer
+        for l in range(self.layers-1):
+
+            # calculate the weighted sum
+            Z = self.weighted_sum(A_prev, self.W[f"W{l+1}"], self.b[f"b{l+1}"])
+            A = self.activation(Z, "relu")
+
+            # get the nodes that will be dropped
+            D = np.random.rand(A.shape[0], A.shape[1])
+            D = (D < self.keep_prob).astype(np.int64)
+            A = np.multiply(D, A)
+            A /= self.keep_prob
+
+            # add the Z and A to the cache
+            caches.append((Z, A_prev, D))
+            # set the A for the next layer
+            A_prev = A
+
+        # calculate the sigomid for the output layer
+        Z = self.weighted_sum(A_prev, self.W[f"W{self.layers}"], self.b[f"b{self.layers}"])
+        AL = self.activation(Z, "sigmoid")
+        D = None
+
+        # add the final cache
+        caches.append((Z, A_prev, D))
+
+        return AL, caches
+
     # calculate the cost function - using BCE Cost function
     def calc_cost(self, AL, y, m):
 
@@ -126,15 +160,22 @@ class NN:
 
     # helper function to calculate the gradient for the activation function
     def gradient_activation(self, dA, curr_w, m, cache, function, regularization):
-        dZ, dA_prev, dw, db = None, None, None, None
-        Z, A_prev = cache
+        dZ, dA_prev, dw, db, A_prev, Z = None, None, None, None, None, None
+
+        if regularization == "none" or regularization == "L2":
+            Z, A_prev = cache
+        elif regularization == "dropout":
+            Z, A_prev, D = cache
+            if D is not None:
+                dA = np.multiply(dA, D)
+                dA /= self.keep_prob
 
         if function == "relu":
             dZ = relu_gradients(dA, Z)
         elif function == "sigmoid":
             dZ = sigmoid_gradients(dA, Z)
 
-        if regularization == "none":
+        if regularization == "none" or regularization == "dropout":
             dA_prev, dw, db = self.gradient_parameters(A_prev, dZ, curr_w, m)
         elif regularization == "L2":
             dA_prev, dw, db = self.gradient_parameters_L2_regularized(A_prev, dZ, curr_w, m)
@@ -185,10 +226,13 @@ class NN:
         for _ in range(self.epochs):
 
             # calculate the forward pass
-            AL, caches = self.forward(X)
+            if regularization == "dropout":
+                AL, caches = self.forward_dropout(X)
+            else:
+                AL, caches = self.forward(X)
 
             # calculate the cost
-            if regularization == "none":
+            if regularization == "none" or regularization == "dropout":
                 cost = self.calc_cost(AL, y, m)
             elif regularization == "L2":
                 cost = self.calc_cost_L2_regularized(AL, y, m)
