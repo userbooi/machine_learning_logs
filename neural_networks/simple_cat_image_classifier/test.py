@@ -4,11 +4,7 @@ from joblib import load
 import matplotlib.pyplot as plt
 
 pixel_dims = 128
-model = load("models/cat_model.joblib")
-
-# check some images
-# plt.imshow(X_raw[52])
-# plt.show()
+model = load("models/cat_model_L2_regularized.joblib")
 
 # ================== test with separate images =======================
 img1 = np.array(Image.open("separate_images/kawhi_leonard.jpeg").resize((pixel_dims, pixel_dims)).convert("RGB"))

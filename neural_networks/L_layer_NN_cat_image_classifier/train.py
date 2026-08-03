@@ -33,17 +33,34 @@ X_train, X_test, y_train, y_test = X_train.T, X_test.T, y_train.reshape(1, y_tra
 
 layers_dims = [X_train.shape[0], 20, 7, 5, 1]
 
-#
-model = NN(layers_dims, lr=0.0075)
-model.fit(X_train, y_train, print_cost=True)
+'''
+not regularized
 
+testing - 60%
+training - 100%
+'''
+# model = NN(layers_dims, lr=0.0075)
+# model.fit(X_train, y_train, print_cost=True)
+
+'''
+L2 regularized
+
+testing - 56%
+training - 100%
+'''
+model = NN(layers_dims, lr=0.0075, lambd=0.1)
+model.fit(X_train, y_train, print_cost=True, regularization="L2")
 
 y_pred = model.predict(X_test)
 y_pred_train = model.predict(X_train)
-print(accuracy_score(y_pred.ravel(), y_test.ravel())) # 60%
-print(accuracy_score(y_pred_train.ravel(), y_train.ravel())) # 100%
+print(accuracy_score(y_pred.ravel(), y_test.ravel()))
+print(accuracy_score(y_pred_train.ravel(), y_train.ravel()))
 
-# save the model
+# save the model - non-regularized
 # dump(model, "model/cat_model.joblib")
 # print("model successfully saved to 'cat_model.joblib'")
+
+# save the model - L2 regularized
+# dump(model, "model/cat_model_L2_regularized.joblib")
+# print("model successfully saved to 'cat_model_L2_regularized.joblib'")
 

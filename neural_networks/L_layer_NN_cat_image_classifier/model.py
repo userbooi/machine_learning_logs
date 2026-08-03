@@ -188,11 +188,14 @@ class NN:
             AL, caches = self.forward(X)
 
             # calculate the cost
-            cost = self.calc_cost(AL, y, m)
+            if regularization == "none":
+                cost = self.calc_cost(AL, y, m)
+            elif regularization == "L2":
+                cost = self.calc_cost_L2_regularized(AL, y, m)
             if _ % 100 == 0:
                 costs.append(cost)
                 if print_cost:
-                    print(cost)
+                    print(f"epoch {_}: {cost}")
 
             # calculate the backward pass
             grads = self.backward(AL, caches, y, m, regularization)
