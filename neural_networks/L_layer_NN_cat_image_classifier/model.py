@@ -25,7 +25,7 @@ class NN:
         self.W = {}
         self.b = {}
 
-        self.init_params(layer_dim)
+        self.init_params()
 
         self.epsilon = 1e-15
 
@@ -34,12 +34,12 @@ class NN:
 
         # use He initialization for the ReLU activation layers
         for i in range(self.layers-1):
-            self.W[f"W{i+1}"] = np.random.randn(self.layer_dim[i + 1], self.layer_dim[i]) / np.sqrt(2 / self.layer_dim[i])
+            self.W[f"W{i+1}"] = np.random.randn(self.layer_dim[i + 1], self.layer_dim[i]) * np.sqrt(2 / self.layer_dim[i])
             self.b[f"b{i+1}"] = np.zeros((self.layer_dim[i+1], 1))
 
         # use Xavier initialization for the sigmoid output layer
-        self.W[f"W{self.layers}"] = np.random.randn(self.layer_dim[self.layers], self.layer_dim[self.layers-1]) / np.sqrt(1 / self.layer_dim[self.layer_dim-1])
-        self.b[f"b{self.layers}"] = np.zeros((self.layer_dim[self.layer_dim], 1))
+        self.W[f"W{self.layers}"] = np.random.randn(self.layer_dim[self.layers], self.layer_dim[self.layers-1]) * np.sqrt(1 / self.layer_dim[self.layers-1])
+        self.b[f"b{self.layers}"] = np.zeros((self.layer_dim[self.layers], 1))
 
 
     # helper function to only compute the weighted sums
