@@ -15,7 +15,7 @@ pixel_dims = 128
 X_raw, y, list_class = data_loader()
 
 # check some images
-# plt.imshow(X_raw[52])
+# plt.imshow(X_raw[53])
 # plt.show()
 
 # view the data
@@ -26,22 +26,22 @@ X_raw, y, list_class = data_loader()
 X_flat = X_raw.reshape(X_raw.shape[0], -1)
 mew = np.mean(X_flat, axis=0, keepdims=True)
 sigma = np.mean(np.square(X_flat), axis=0, keepdims=True)
-X = (X_flat - mew) / sigma
+X = (X_flat - mew) / np.sqrt(sigma)
 
 # split the data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 # transform the data into the ones that will work with the model
 X_train, X_test, y_train, y_test = X_train.T, X_test.T, y_train.reshape(1, y_train.shape[0]), y_test.reshape(1, y_test.shape[0])
-
 layers_dims = [X_train.shape[0], 20, 7, 5, 1]
 
 '''
 not regularized
 
-testing - 50%
-training - 100%
+testing - 74.60%
+training - 99.66%
+separate testing - 60%
 '''
-# model = NN(layers_dims, mew, sigma, lr=0.0075)
+# model = NN(layers_dims, mew, sigma, lr=0.001)
 # model.fit(X_train, y_train, print_cost=True)
 #
 # # save the model - non-regularized
@@ -51,12 +51,13 @@ training - 100%
 '''
 L2 regularized
 
-testing - 68.75%
-training - 100%
+testing - 73.02%
+training - 98.97%
+separate testing - 70%
 '''
-model = NN(layers_dims, mew, sigma, lr=0.0075, lambd=0.075)
-model.fit(X_train, y_train, print_cost=True, regularization="L2")
-
+# model = NN(layers_dims, mew, sigma, lr=0.001, lambd=0.025)
+# model.fit(X_train, y_train, print_cost=True, regularization="L2")
+#
 # # save the model - L2 regularized
 # dump(model, "model/cat_model_L2_regularized.joblib")
 # print("model successfully saved to 'cat_model_L2_regularized.joblib'")
@@ -64,15 +65,16 @@ model.fit(X_train, y_train, print_cost=True, regularization="L2")
 '''
 Dropout regularized
 
-testing - 50%
+testing - 69.84%
 training - 100%
+separate test - 60%
 '''
-# model = NN(layers_dims, mew, sigma, lr=0.0075, keep_prob=0.75)
-# model.fit(X_train, y_train, print_cost=True, regularization="dropout")
-#
-# # save the model - dropout regularized
-# dump(model, "model/cat_model_dropout_regularized.joblib")
-# print("model successfully saved to 'cat_model_dropout_regularized.joblib'")
+model = NN(layers_dims, mew, sigma, lr=0.001, keep_prob=0.9)
+model.fit(X_train, y_train, print_cost=True, regularization="dropout")
+
+# save the model - dropout regularized
+dump(model, "model/cat_model_dropout_regularized.joblib")
+print("model successfully saved to 'cat_model_dropout_regularized.joblib'")
 
 y_pred = model.predict(X_test)
 y_pred_train = model.predict(X_train)

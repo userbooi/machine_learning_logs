@@ -14,7 +14,7 @@ the output layer
 class NN:
 
     # initial function called upon instance creation
-    def __init__(self, layer_dim, mew, sigma, lr=0.001, epochs=2500, lambd=0, keep_prob=1):
+    def __init__(self, layer_dim, mew, sigma, lr=0.001, epochs=2500, lambd=0, keep_prob=1, beta1=0.9, beta2=0.999):
         self.lr = lr
         self.epochs = epochs
         self.layers = len(layer_dim) - 1
@@ -23,13 +23,20 @@ class NN:
         self.keep_prob = keep_prob
         self.mew = mew
         self.sigma = sigma
+        self.beta1 = beta1
+        self.beta2 = beta2
 
         self.W = {}
         self.b = {}
+        self.vW = {}
+        self.vb = {}
+        self.sW = {}
+        self.sb = {}
 
         self.init_params()
+        self.init_params_adam()
 
-        self.epsilon = 1e-15
+        self.epsilon = 1e-8
 
     # initialize the parameters for each layer
     def init_params(self):
@@ -43,6 +50,13 @@ class NN:
         self.W[f"W{self.layers}"] = np.random.randn(self.layer_dim[self.layers], self.layer_dim[self.layers-1]) * np.sqrt(1 / self.layer_dim[self.layers-1])
         self.b[f"b{self.layers}"] = np.zeros((self.layer_dim[self.layers], 1))
 
+    # initialize the velocity and squares used for adam
+    def init_params_adam(self):
+        for i in range(self.layers):
+            self.vW[f"dW{i+1}"] = np.zeros(self.W[f"W{i+1}"].shape)
+            self.vb[f"db{i+1}"] = np.zeros(self.b[f"b{i+1}"].shape)
+            self.sW[f"dW{i+1}"] = np.zeros(self.W[f"W{i+1}"].shape)
+            self.sb[f"db{i+1}"] = np.zeros(self.b[f"b{i+1}"].shape)
 
     # helper function to only compute the weighted sums
     def weighted_sum(self, A_prev, curr_w, curr_b):
@@ -125,7 +139,8 @@ class NN:
     # calculate the cost function - using BCE Cost function
     def calc_cost(self, AL, y, m):
 
-        log_part = np.multiply(y, np.log(AL)) + np.multiply(1 - y, np.log(1 - AL))
+        AL_clipped = np.clip(AL, self.epsilon, 1-self.epsilon)
+        log_part = np.multiply(y, np.log(AL_clipped)) + np.multiply(1 - y, np.log(1 - AL_clipped))
         cost = -1. / m * np.nansum(log_part)
 
         return np.squeeze(cost)
@@ -133,7 +148,8 @@ class NN:
     def calc_cost_L2_regularized(self, AL, y, m):
 
         # calculate the regular cost
-        log_part = np.multiply(y, np.log(AL)) + np.multiply(1 - y, np.log(1 - AL))
+        AL_clipped = np.clip(AL, self.epsilon, 1 - self.epsilon)
+        log_part = np.multiply(y, np.log(AL_clipped)) + np.multiply(1 - y, np.log(1 - AL_clipped))
         cost = -1. / m * np.nansum(log_part)
 
         # calculate the regularized cost term
@@ -218,6 +234,24 @@ class NN:
             self.W[f"W{l+1}"] -= self.lr * grads[f"dW{l+1}"]
             self.b[f"b{l+1}"] -= self.lr * grads[f"db{l+1}"]
 
+    # helper function to update the parameters but using Adam Optimization Algorithm
+    def update_parameters_adam(self, grads, t):
+
+        # loop through all the gradients and update
+        for l in range(self.layers):
+            self.vW[f"dW{l+1}"] = self.beta1*self.vW[f"dW{l+1}"] + (1-self.beta1)*grads[f"dW{l+1}"]
+            self.vb[f"db{l+1}"] = self.beta1*self.vb[f"db{l+1}"] + (1-self.beta1)*grads[f"db{l+1}"]
+            bc_vW = self.vW[f"dW{l+1}"] / (1 - self.beta1**t)
+            bc_vb = self.vb[f"db{l+1}"] / (1 - self.beta1**t)
+
+            self.sW[f"dW{l+1}"] = self.beta2*self.sW[f"dW{l+1}"] + (1-self.beta2)*grads[f"dW{l+1}"]**2
+            self.sb[f"db{l+1}"] = self.beta2*self.sb[f"db{l+1}"] + (1-self.beta2)*grads[f"db{l+1}"]**2
+            bc_sW = self.sW[f"dW{l+1}"] / (1-self.beta2**t)
+            bc_sb = self.sb[f"db{l+1}"] / (1-self.beta2**t)
+
+            self.W[f"W{l+1}"] -= self.lr * bc_vW / (np.sqrt(bc_sW) + self.epsilon)
+            self.b[f"b{l+1}"] -= self.lr * bc_vb / (np.sqrt(bc_sb) + self.epsilon)
+
     # the fit function that trains the model
     def fit(self, X, y, print_cost=False, regularization="none"):
 
@@ -247,7 +281,7 @@ class NN:
             grads = self.backward(AL, caches, y, m, regularization)
 
             # update the parameters
-            self.update_parameters(grads)
+            self.update_parameters_adam(grads, _+1)
 
         return costs
 

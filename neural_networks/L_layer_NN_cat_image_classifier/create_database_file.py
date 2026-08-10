@@ -13,19 +13,26 @@ data, target, list_class = [], [], []
 
 for img_path in img_folder.iterdir():
     # load image and convert to RGB
-    img = Image.open(img_path).resize((pixel_dims, pixel_dims)).convert("RGB")
+    raw_image = Image.open(img_path).resize((pixel_dims, pixel_dims))
+    img = raw_image.convert("RGB")
+    img_flipped1 = raw_image.transpose(method=Image.FLIP_LEFT_RIGHT).convert("RGB")
+    img_flipped2 = raw_image.transpose(method=Image.FLIP_TOP_BOTTOM).convert("RGB")
     # convert to numpy array
     img_array = np.array(img)
+    img_flipped_array1 = np.array(img_flipped1)
+    img_flipped_array2 = np.array(img_flipped2)
     # add the image to the data
     data.append(img_array)
+    data.append(img_flipped_array1)
+    data.append(img_flipped_array2)
 
     # check if the image is a cat to add the target
     if "cat" in img_path.name:
-        target.append(1)
-        list_class.append("cat")
+        target.append(1); target.append(1); target.append(1)
+        list_class.append("cat"); list_class.append("cat"); list_class.append("cat")
     else:
-        target.append(0)
-        list_class.append("not cat")
+        target.append(0); target.append(0); target.append(0)
+        list_class.append("not cat"); list_class.append("not cat"); list_class.append("not cat")
 
 # convert everything into numpy arrays
 data, target = np.array(data), np.array(target)

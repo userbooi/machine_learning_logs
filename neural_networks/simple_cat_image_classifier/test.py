@@ -3,7 +3,7 @@ from PIL import Image
 from joblib import load
 import matplotlib.pyplot as plt
 
-pixel_dims = 64
+pixel_dims = 128
 # model = load("models/cat_model.joblib")
 # model = load("models/cat_model_L2_regularized.joblib")
 model = load("models/cat_model_dropout_regularized.joblib")
