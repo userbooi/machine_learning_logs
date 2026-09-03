@@ -4,8 +4,8 @@ from tensorflow.keras import Model
 
 def logistic_regression():
 
-    X = Input(input_shape=(30, ))
-    output = Dense(1, activation="relu")(X)
+    X = Input(shape=(30, ))
+    output = Dense(1, activation="sigmoid")(X)
 
     model = Model(inputs=X, outputs=output)
 

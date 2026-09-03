@@ -4,6 +4,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.datasets import load_breast_cancer
 import tensorflow as tf
 
+from model import *
+
 # bc_dataset = load_breast_cancer()
 # print(bc_dataset.data)
 # print(bc_dataset.target)
@@ -26,5 +28,10 @@ dev_dataset = dev_dataset.batch(32).prefetch(AUTOTUNE)
 test_dataset = tf.data.Dataset.from_tensor_slices((X_test, y_test))
 test_dataset = test_dataset.batch(32).prefetch(AUTOTUNE)
 
-
-
+# create the model
+model = logistic_regression()
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
+              loss=tf.keras.losses.BinaryCrossentropy(),
+              metrics=['accuracy'])
+history = model.fit(train_dataset, epochs=500, validation_data=dev_dataset)
+# print(history.history)
