@@ -4,7 +4,7 @@ import numpy as np
 'lr' is the learning rate (the amount of the gradient that will be used to change the weight and bias)
 
 formula for multivariate lienar regression:
-    y = w1 * x1 + w2 * x2 + ... + wn * xn + b
+    y = w11 * x1 + w11 * x2 + ... + wn * xn + b
 
 where w is the weight (slope)
       b is the bias (intercept)
