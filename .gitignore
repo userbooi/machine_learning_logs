@@ -1,1 +1,2 @@
 pytorch/hard/data/*.tar.gz
+hugging_face_transformers/basics/models/bert_custom/model.safetensors
